@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+/* Tailwind v4 defaults to system preferences for dark mode.
+  This line overrides it to support your manual toggle button
+  by looking for the "dark" class on the HTML element.
+*/
+@variant dark (&:where(.dark, .dark *));
