@@ -25,8 +25,8 @@ A full-stack application that fetches Reddit post details from the Reddit API, p
 - Sentiment (NPM package for sentiment scores)
 
 ## Project Structure
-
-\`\`\`
+```
+```
 root/
  ├── backend/
  │    ├── controllers/
@@ -40,8 +40,8 @@ root/
  │
  ├── README.md
  └── package.json
-\`\`\`
-
+```
+```
 ## Environment Variables
 
 Create a `.env` file inside `backend/`:
