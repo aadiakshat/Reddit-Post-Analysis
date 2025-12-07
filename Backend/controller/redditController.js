@@ -4,11 +4,13 @@ const NodeCache = require("node-cache");
 const rateLimit = require("axios-rate-limit");
 const { URL } = require("url");
 
-const {
-  RedditPost,
-  RedditUser,
-  SubredditInfo
-} = require("../models/redditData.js");
+
+
+
+const RedditPost = require("../models/redditPost.js");
+
+
+console.log("RedditPost Model:", RedditPost);
 
 const sentiment = new Sentiment();
 const cache = new NodeCache({ stdTTL: 300 });
@@ -167,8 +169,8 @@ exports.fetchPostAnalytics = async (req, res) => {
         comparative: titleSentiment.comparative,
         titleScore: titleSentiment.score,
         commentScore: commentSentiment,
-        category: totalSentiment > 2 ? "Positive" : 
-                 totalSentiment < -2 ? "Negative" : "Neutral"
+        category: totalSentiment > 0.1 ? "Positive" : 
+                 totalSentiment < -0.1 ? "Negative" : "Neutral"
       },
       engagement: {
         upvotes: ups,
@@ -188,12 +190,34 @@ exports.fetchPostAnalytics = async (req, res) => {
       analytics_timestamp: new Date()
     };
 
-    try {
+        try {
       const saved = await RedditPost.findOneAndUpdate(
         { postId },
-        analytics,
-        { 
-          new: true, 
+        {
+          postId,
+          title: analytics.title,
+          author: analytics.author,
+          subreddit: analytics.subreddit,
+
+          // Engagement
+          score: analytics.engagement?.score,
+          upvotes: analytics.engagement?.upvotes,
+          comments: analytics.engagement?.comments,
+          upvote_ratio: analytics.engagement?.upvote_ratio,
+          awards: analytics.engagement?.awards,
+
+          // Metadata
+          created: analytics.metadata?.created,
+          url: analytics.metadata?.url,
+          domain: analytics.metadata?.domain,
+          thumbnail: analytics.metadata?.thumbnail,
+          is_video: analytics.metadata?.is_video,
+
+          // Sentiment
+          sentiment: analytics.sentiment
+        },
+        {
+          new: true,
           upsert: true,
           runValidators: true,
           setDefaultsOnInsert: true
@@ -208,7 +232,10 @@ exports.fetchPostAnalytics = async (req, res) => {
         data: saved,
         cached: false
       });
+
     } catch (dbErr) {
+      console.log("DB SAVE ERROR:", dbErr.message);
+
       return res.json({
         success: true,
         message: "Analytics fetched (not saved to DB)",
@@ -219,12 +246,13 @@ exports.fetchPostAnalytics = async (req, res) => {
 
   } catch (err) {
     const statusCode = err.response?.status || 500;
-    return res.status(statusCode).json({ 
+    return res.status(statusCode).json({
       error: "Failed to fetch post analytics",
       code: "API_ERROR"
     });
   }
 };
+
 
 exports.getUserAnalytics = async (req, res) => {
   try {

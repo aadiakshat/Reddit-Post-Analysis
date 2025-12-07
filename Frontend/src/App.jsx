@@ -105,22 +105,22 @@ const SentimentBadge = ({ sentiment }) => {
       return sentiment.label || sentiment.sentiment || 'Neutral';
     }
     const score = getScore();
-    if (score >= 0.3) return 'Positive';
-    if (score <= -0.3) return 'Negative';
+    if (score >= 0.1) return 'Positive';
+    if (score <= -0.1) return 'Negative';
     return 'Neutral';
   };
 
   const getSentimentColor = () => {
     const score = getScore();
-    if (score >= 0.3) return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
-    if (score <= -0.3) return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
+    if (score >= 0.1) return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
+    if (score <= -0.1) return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
     return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
   };
 
   return (
     <div className={`px-3 py-1 rounded-full ${getSentimentColor()}`}>
-      <span className="text-sm font-medium">{getLabel()}</span>
-      <span className="text-xs ml-2">({getScore().toFixed(2)})</span>
+      <span className="text-sm font-medium">{}</span>
+      {<span className="text-xs ml-2">({getScore().toFixed(2)})</span>}
     </div>
   );
 };
@@ -276,20 +276,20 @@ const AnalyticsDashboard = ({ analysis }) => {
               </div>
             </div>
             <div>
-              <div className="flex justify-between text-sm mb-1">
+              {/* <div className="flex justify-between text-sm mb-1">
                 <span className="text-slate-500 dark:text-slate-400">Controversiality</span>
                 <span className="font-medium">
                   {postData.controversiality || 0}
                 </span>
-              </div>
-              <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+              </div> */}
+              {/* <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-purple-500 rounded-full" 
                   style={{ 
                     width: postData.controversiality ? `${postData.controversiality * 10}%` : '0%'
                   }}
                 />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -360,22 +360,25 @@ export default function RedditAnalyticsHome() {
   }, []);
 
   // Save recent searches to localStorage
+
   const saveToRecentSearches = (url, data) => {
-    const newSearch = {
-      url,
-      subreddit: data.subreddit,
-      title: data.title,
-      timestamp: new Date().toISOString()
-    };
+          const newSearch = {
+            url,
+            subreddit: data.subreddit,
+            title: data.title,
+            timestamp: new Date().toISOString()
+          };
 
-    const updatedSearches = [
-      newSearch,
-      ...recentSearches.filter(search => search.url !== url)
-    ].slice(0, 5); // Keep only 5 most recent
+          const updatedSearches = [
+            newSearch,
+            ...recentSearches.filter(search => search.url !== url)
+          ].slice(0, 5);
 
-    setRecentSearches(updatedSearches);
-    localStorage.setItem('recentRedditSearches', JSON.stringify(updatedSearches));
-  };
+          setRecentSearches(updatedSearches);
+          localStorage.setItem('recentRedditSearches', JSON.stringify(updatedSearches));
+        };
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -400,58 +403,41 @@ export default function RedditAnalyticsHome() {
         const backend = response.data;
 
         // ⭐ NORMALIZE BACKEND → UI FORMAT
-        const normalized = {
+                const normalized = {
           postId: backend.postId,
           title: backend.title,
           subreddit: backend.subreddit,
           author: backend.author,
 
-          // 🔸 Engagement
-          score: backend.engagement?.score ?? 0,
-          upvotes: backend.engagement?.upvotes ?? 0,
-          num_comments: backend.engagement?.comments ?? 0,
-          upvote_ratio: backend.engagement?.upvote_ratio ?? 0,
-          total_awards_received: backend.engagement?.awards ?? 0,
+          // 🔧 Engagement → match DB shape
+          upvotes: backend.upvotes ?? 0,
+          num_comments: backend.comments ?? 0,
+          score: backend.score ?? 0,
+          upvote_ratio: backend.upvote_ratio ?? 0,
+          total_awards_received: backend.awards ?? 0,
 
-          // 🔸 Metadata
-          created_utc: backend.metadata?.created
-            ? new Date(backend.metadata.created).getTime() / 1000
+          // 🔧 Metadata
+          created_utc: backend.created
+            ? new Date(backend.created).getTime() / 1000
             : null,
-          url: backend.metadata?.url,
-          domain: backend.metadata?.domain,
-          thumbnail: backend.metadata?.thumbnail,
-          is_video: backend.metadata?.is_video,
+          url: backend.url,
+          domain: backend.domain,
+          thumbnail: backend.thumbnail,
+          is_video: backend.is_video,
 
-          // 🔸 Sentiment
-          sentiment: {
-            score: backend.sentiment?.score ?? 0,
-            sentiment: backend.sentiment?.category ?? "Neutral"
-          },
+          // 🔧 Sentiment
+          sentiment: backend.sentiment || { score: 0, sentiment: "Neutral" },
 
-          warning: response.warning,
-          message: response.message
+          message: response.message,
+          warning: response.warning
         };
+
 
         // Store normalized output
         setAnalysis(normalized);
         setResponseMessage(response.message);
+        saveToRecentSearches(url, normalized);
 
-        const saveToRecentSearches = (url, data) => {
-          const newSearch = {
-            url,
-            subreddit: data.subreddit,
-            title: data.title,
-            timestamp: new Date().toISOString()
-          };
-
-          const updatedSearches = [
-            newSearch,
-            ...recentSearches.filter(search => search.url !== url)
-          ].slice(0, 5);
-
-          setRecentSearches(updatedSearches);
-          localStorage.setItem('recentRedditSearches', JSON.stringify(updatedSearches));
-        };
 
       } else {
         setError(response.error || response.message || "Failed to fetch analytics.");
@@ -635,7 +621,7 @@ export default function RedditAnalyticsHome() {
                 <div className="inline-flex items-center gap-2 text-sm text-slate-500">
                   <span>Try:</span>
                   <button
-                    onClick={() => setUrl("https://www.reddit.com/r/Indianfieldhockey/comments/1pez3xl/hows_the_josh_high_on_the_both_end_sir/")}
+                    onClick={() => setUrl("https://www.reddit.com/r/IndiaCricket/comments/1mzn7if/hello_reddit_im_sachin_tendulkar_here_for_an_ama/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button")}
                     className="text-orange-500 hover:text-orange-600 hover:underline"
                   >
                     Example post
