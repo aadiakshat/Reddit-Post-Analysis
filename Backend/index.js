@@ -11,7 +11,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Fix CORS - Add this exact middleware
-capp.use(cors({
+app.use(cors({
   origin: function(origin, callback) {
     if (!origin) return callback(null, true);
     
