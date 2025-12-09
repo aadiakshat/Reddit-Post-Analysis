@@ -11,21 +11,26 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Fix CORS - Add this exact middleware
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:5174",
-  "http://localhost:5175",
-  "http://localhost:5176",
-
-  // ★ Permanent Vercel frontend domain
-  "https://reddit-post-analysis-two.vercel.app"
-];
-
-app.use(cors({
+capp.use(cors({
   origin: function(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin) return callback(null, true);
+    
+    // Allow localhost
+    if (origin.startsWith("http://localhost:")) {
       return callback(null, true);
     }
+    
+    // Allow your permanent domain
+    if (origin === "https://reddit-post-analysis-two.vercel.app") {
+      return callback(null, true);
+    }
+    
+    // Allow ANY Vercel preview deployment
+    if (origin.includes(".vercel.app")) {
+      console.log("✅ Allowing Vercel deployment:", origin);
+      return callback(null, true);
+    }
+    
     console.log("❌ Blocked CORS:", origin);
     return callback(new Error("Not allowed by CORS"));
   },
