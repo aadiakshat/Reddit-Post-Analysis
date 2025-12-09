@@ -17,7 +17,9 @@ app.use(cors({
     'http://localhost:5174',
     'http://localhost:5175',
     'http://localhost:5176',
-    'https://your-frontend.vercel.app'
+    'https://your-frontend.vercel.app',
+    'https://reddit-post-analysis-eqia8htm7-akshats-projects-3c19c5db.vercel.app'
+
   ],
   credentials: true
 }));
