@@ -12,9 +12,16 @@ const PORT = process.env.PORT || 5000;
 
 // Fix CORS - Add this exact middleware
 app.use(cors({
-  origin: 'http://localhost:5173', // Your Vite frontend
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:5175',
+    'http://localhost:5176',
+    'https://your-frontend.vercel.app'
+  ],
   credentials: true
 }));
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
