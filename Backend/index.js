@@ -51,11 +51,14 @@ app.use((req, res) => {
 });
 
 // MongoDB connection
-if (process.env.MONGODB_URI) {
-  mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('✅ Connected to MongoDB'))
-    .catch(err => console.log('⚠️ MongoDB connection failed, running without DB:', err.message));
+if (process.env.MONGO_URL) {
+  mongoose.connect(process.env.MONGO_URL)
+    .then(() => console.log('✅ Connected to MongoDB Atlas'))
+    .catch(err => console.log('❌ MongoDB connection error:', err.message));
+} else {
+  console.log("⚠️ MONGO_URL is missing! Add it to your .env file.");
 }
+
 
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
