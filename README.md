@@ -10,7 +10,7 @@ The project focuses on **API integration, real-time analysis, and frontend–bac
 ## 🚀 Live Demo
 
 - **Frontend:** https://reddit-post-analysis-two.vercel.app  
-- **Backend:** Hosted separately (API-based architecture)
+- **Backend:** [Hosted separately (API-based architecture)](https://reddit-post-analysis.onrender.com)
 
 ---
 
