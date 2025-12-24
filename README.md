@@ -5,8 +5,51 @@ Users can paste any public Reddit post URL to instantly fetch post data, run sen
 
 The project focuses on **API integration, real-time analysis, and frontend–backend coordination**, without relying on any database or external storage.
 
----
 
+## Why this project?
+
+Reddit discussions generate massive engagement, but raw metrics like upvotes and comments don’t reveal sentiment.
+This project bridges that gap by analyzing Reddit posts using a sentiment engine tailored for informal online language, while ensuring efficient data handling and avoiding duplicate analysis.
+
+---
+## Architecture Overview
+
+```
+Frontend (React + Tailwind)
+        ↓
+REST API (Node.js + Express)
+        ↓
+Sentiment Engine (VADER)
+        ↓
+MongoDB (Post ID–based persistence)
+        ↓
+Reddit API
+
+```
+Key Design Decisions
+
+VADER for sentiment analysis
+Selected for its effectiveness on short, informal, social-media text without requiring model training.
+
+Post ID–based persistence
+Reddit post IDs are stored in MongoDB to prevent duplicate analysis and reduce redundant API calls.
+
+Decoupled frontend–backend architecture
+Enables independent scaling, cleaner separation of concerns, and easier deployment.
+
+Rate-limited API access
+Protects against Reddit API throttling and improves reliability under repeated requests.
+
+
+## API Flow
+
+  1. User submits a Reddit post URL
+  2. Backend validates the URL and extracts the post ID
+  3. If the post already exists in MongoDB, cached analysis is returned
+  4. Otherwise, the Reddit API is queried and sentiment is computed
+  
+  The result is stored and returned to the frontend
+  
 ## 🚀 Live Demo
 
 - **Frontend:** https://reddit-post-analysis-two.vercel.app  
