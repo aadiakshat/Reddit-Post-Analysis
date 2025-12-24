@@ -56,7 +56,7 @@ Protects against Reddit API throttling and improves reliability under repeated r
 - **Backend:** [Hosted separately (API-based architecture)](https://reddit-post-analysis.onrender.com)
 
 ---
-## 📸 Screenshots
+### 📸 Screenshots
 <details>
 <summary>Click to view application screenshots</summary>
 
@@ -67,7 +67,7 @@ Protects against Reddit API throttling and improves reliability under repeated r
 ![Gemini Analysis](Screenshots/Screenshot%20from%202025-12-24%2022-41-15.png)
 
 </details>
-## What This Project Does
+### What This Project Does
 
 RedditTrack allows users to:
 
