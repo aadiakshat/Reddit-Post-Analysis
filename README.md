@@ -13,7 +13,17 @@ The project focuses on **API integration, real-time analysis, and frontend–bac
 - **Backend:** [Hosted separately (API-based architecture)](https://reddit-post-analysis.onrender.com)
 
 ---
+## 📸 Screenshots
+<details>
+<summary>📸 View Application Screenshots</summary>
 
+### Home – Reddit URL Input
+![Home Page](Screenshots/Screenshot from 2025-12-24 22-40-30.png)
+
+### AI Analysus
+![Dark Mode](Screenshots/Screenshot from 2025-12-24 22-41-15.png)
+
+</details>
 ## 🧠 What This Project Does
 
 RedditTrack allows users to:
@@ -162,6 +172,7 @@ Sample Response
 }
 
 ```
+
 
 ⚠️ Error Handling
 
