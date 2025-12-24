@@ -5,6 +5,7 @@ const redditController = require("../controller/redditController");
 router.post("/post", redditController.fetchPostAnalytics);
 router.get("/user/:username", redditController.getUserAnalytics);
 router.get("/subreddit/:name", redditController.getSubredditAnalytics);
+router.get("/post/:postId/gemini",redditController.getPostGeminiInsight);
 
 router.get("/test", (req, res) => {
   res.json({

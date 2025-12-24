@@ -1,18 +1,5 @@
 import React from "react";
 
-/**
- * StatCard
- * --------
- * Reusable metric card for analytics dashboards.
- *
- * Props:
- * - icon: Lucide/Icon component
- * - label: string (metric name)
- * - value: string | number
- * - trend: number (percentage, optional)
- * - description: string (optional)
- * - large: boolean (optional, grid spanning)
- */
 const StatCard = ({
   icon: Icon,
   label,

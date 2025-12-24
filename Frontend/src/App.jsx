@@ -5,6 +5,7 @@ import {
 
 import AnalyticsDashboard from './components/AnalyticsDashboard';
 import { EngagementChart,SentimentPieChart,QuickInsights,EngagementTimeline,PerformanceRadar} from './components/charts';
+import ReviewPanel from './components/LLM';
 /* ---------------------- THEME TOGGLE ---------------------- */
 const ThemeToggle = () => {
   const [theme, setTheme] = useState(() => {
@@ -387,7 +388,9 @@ export default function RedditAnalyticsHome() {
                   <PerformanceRadar analysis={analysis} />
             
                 </>
-
+                    <div>
+                      <ReviewPanel postId={analysis.postId} />
+                    </div>
               </div>
             )}
           </div>

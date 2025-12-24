@@ -12,6 +12,14 @@ const http = rateLimit(axios.create(), {
   maxRPS: 1
 });
 
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+const geminiModel = genAI.getGenerativeModel({
+  model: "gemini-2.5-flash-lite"
+});
+
 class RedditAPI {
   static async fetchWithRetry(url, retries = 3) {
     for (let i = 0; i < retries; i++) {
@@ -678,6 +686,78 @@ exports.getSubredditAnalytics = async (req, res) => {
     res.status(statusCode).json({ 
       error: err.response?.status === 404 ? "Subreddit not found" : "Failed to fetch subreddit analytics",
       code: err.response?.status === 404 ? "SUBREDDIT_NOT_FOUND" : "API_ERROR"
+    });
+  }
+};
+exports.getPostGeminiInsight = async (req, res) => {
+  try {
+    const { postId } = req.params;
+
+    if (!postId) {
+      return res.status(400).json({
+        error: "Post ID required",
+        code: "INVALID_INPUT"
+      });
+    }
+
+    // ✅ Use existing analytics (cheap + fast)
+    const post = await RedditPost.findOne({ postId });
+
+    if (!post) {
+      return res.status(404).json({
+        error: "Post analytics not found",
+        code: "POST_NOT_FOUND"
+      });
+    }
+
+    const prompt = `
+You are an expert Reddit content analyst.
+
+Analyze this Reddit post and give:
+1. 2-line summary
+2. Sentiment interpretation
+3. Virality & controversy reasoning
+4. One actionable insight
+
+DATA:
+Title: ${post.title}
+Subreddit: r/${post.subreddit}
+
+Upvotes: ${post.upvotes || 0}
+Comments: ${post.comments || 0}
+Upvote Ratio: ${post.upvote_ratio || 0}
+Awards: ${post.awards || 0}
+
+Sentiment:
+Category: ${post.sentiment?.category || "Unknown"}
+Score: ${post.sentiment?.compound ?? 0}
+
+Engagement:
+Score: ${post.engagement?.score ?? 0}
+Virality: ${post.engagement?.virality_score ?? 0}
+Controversy: ${post.engagement?.controversy_score ?? 0}
+
+Respond in bullet points.
+`;
+
+
+    const result = await geminiModel.generateContent(prompt);
+    const text = result.response.text();
+
+    return res.json({
+      success: true,
+      data: {
+        postId,
+        gemini_insight: text,
+        generated_at: new Date()
+      }
+    });
+
+  } catch (err) {
+    console.error("GEMINI ERROR:", err.message);
+    res.status(500).json({
+      error: "Gemini insight generation failed",
+      code: "GEMINI_ERROR"
     });
   }
 };
