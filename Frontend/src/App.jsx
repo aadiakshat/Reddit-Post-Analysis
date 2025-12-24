@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, Moon, TrendingUp, MessageCircle, ThumbsUp, Activity, Calendar, User, Hash, Award, Clock, BarChart3, AlertCircle } from 'lucide-react';
+import {
+  Sun, Moon,TrendingUp
+} from 'lucide-react';
 
+import AnalyticsDashboard from './components/AnalyticsDashboard';
+import { EngagementChart,SentimentPieChart,QuickInsights,EngagementTimeline,PerformanceRadar} from './components/charts';
 /* ---------------------- THEME TOGGLE ---------------------- */
 const ThemeToggle = () => {
   const [theme, setTheme] = useState(() => {
@@ -54,291 +58,7 @@ const ThemeToggle = () => {
   );
 };
 
-/* ---------------------- SMALL STAT CARD ---------------------- */
-const StatCard = ({ icon: Icon, label, value, trend, description, large }) => (
-  <div className={`rounded-2xl bg-white dark:bg-slate-800/50 p-4 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow
-    ${large ? "col-span-2 md:col-span-3 lg:col-span-2" : ""}`}>
-    
-    <div className="flex items-center justify-between mb-2">
-      <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-700">
-        <Icon size={18} className="text-slate-600 dark:text-slate-300" />
-      </div>
 
-      {trend !== undefined && (
-        <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-          trend > 0 
-            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
-            : trend < 0
-            ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-            : 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
-        }`}>
-          {trend > 0 ? '+' : ''}{trend}%
-        </span>
-      )}
-    </div>
-
-    <p className={`font-bold text-slate-900 dark:text-white mb-1 
-      ${large ? "text-3xl" : "text-2xl"}`}>
-      {value}
-    </p>
-
-    <p className="text-xs text-slate-500 dark:text-slate-400">{label}</p>
-
-    {description && (
-      <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1">{description}</p>
-    )}
-  </div>
-);
-
-/* ---------------------- SENTIMENT BADGE ---------------------- */
-const SentimentBadge = ({ sentiment }) => {
-  // Handle both sentiment object and numeric score
-  const getScore = () => {
-    if (typeof sentiment === 'object') {
-      return sentiment.score || sentiment.compound || 0;
-    }
-    return sentiment || 0;
-  };
-
-  const getLabel = () => {
-    if (typeof sentiment === 'object') {
-      return sentiment.label || sentiment.sentiment || 'Neutral';
-    }
-    const score = getScore();
-    if (score >= 0.1) return 'Positive';
-    if (score <= -0.1) return 'Negative';
-    return 'Neutral';
-  };
-
-  const getSentimentColor = () => {
-    const score = getScore();
-    if (score >= 0.1) return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
-    if (score <= -0.1) return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
-    return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
-  };
-
-  return (
-    <div className={`px-3 py-1 rounded-full ${getSentimentColor()}`}>
-      <span className="text-sm font-medium">{}</span>
-      {<span className="text-xs ml-2">({getScore().toFixed(2)})</span>}
-    </div>
-  );
-};
-
-/* ---------------------- ANALYTICS DASHBOARD ---------------------- */
-const AnalyticsDashboard = ({ analysis }) => {
-  // Extract data from analysis object (which is the data property from response)
-  const postData = analysis;
-  
-  // Format stats based on actual response structure
- 
-  const stats = [
-    {
-      icon: ThumbsUp,
-      label: "Upvotes",
-      value: postData.upvotes ?? 0,
-      description: "Total upvotes"
-    },
-    {
-      icon: MessageCircle,
-      label: "Comments",
-      value: postData.num_comments ?? 0,
-      description: "Total comments"
-    },
-    {
-      icon: Activity,
-      label: "Score",
-      value: postData.score ?? 0,
-      description: "Post score"
-    },
-
-    // ⭐ BIG CREATED CARD
-    {
-      icon: Clock,
-      label: "Created",
-      value: postData.created_utc
-        ? new Date(postData.created_utc * 1000).toLocaleString()
-        : "N/A",
-      description: "When this post was published",
-      large: true // custom flag to make it larger
-    },
-
-    {
-      icon: Award,
-      label: "Awards",
-      value: postData.total_awards_received ?? 0,
-      description: "Awards received"
-    }
-  ];
-
-
-
-  return (
-    <div className="space-y-6">
-      {/* Warning Banner if needed */}
-      {analysis.warning && (
-        <div className="p-4 rounded-xl bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
-          <div className="flex items-center gap-2">
-            <AlertCircle size={18} className="text-yellow-600 dark:text-yellow-400" />
-            <span className="text-sm text-yellow-700 dark:text-yellow-300">{analysis.warning}</span>
-          </div>
-        </div>
-      )}
-
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        {stats.map((stat, index) => (
-          <StatCard key={index} {...stat} />
-        ))}
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* Post Details Card */}
-        <div className="rounded-2xl bg-white dark:bg-slate-800/50 p-6 border border-slate-200 dark:border-slate-700">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Hash size={18} />
-            Post Details
-          </h3>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-500 dark:text-slate-400">Post ID</span>
-              <span className="font-medium font-mono">{postData.postId || 'N/A'}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-500 dark:text-slate-400">Subreddit</span>
-              <span className="font-medium">r/{postData.subreddit}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-500 dark:text-slate-400">Author</span>
-              <span className="font-medium">u/{postData.author}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-500 dark:text-slate-400">Flair</span>
-              <span className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-sm">
-                {postData.link_flair_text || 'None'}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-500 dark:text-slate-400">NSFW</span>
-              <span className={`px-3 py-1 rounded-full text-sm ${
-                postData.over_18 
-                  ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' 
-                  : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-              }`}>
-                {postData.over_18 ? 'Yes' : 'No'}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-500 dark:text-slate-400">Sentiment</span>
-              <SentimentBadge sentiment={postData.sentiment} />
-            </div>
-          </div>
-        </div>
-
-        {/* Engagement Timeline Card */}
-        <div className="rounded-2xl bg-white dark:bg-slate-800/50 p-6 border border-slate-200 dark:border-slate-700">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <TrendingUp size={18} />
-            Engagement Metrics
-          </h3>
-          <div className="space-y-3">
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-slate-500 dark:text-slate-400">Comments per Upvote</span>
-                <span className="font-medium">
-                  {postData.num_comments && postData.score 
-                    ? (postData.num_comments / postData.score).toFixed(2) 
-                    : 'N/A'}
-                </span>
-              </div>
-              <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-orange-500 rounded-full" 
-                  style={{ 
-                    width: postData.upvote_ratio ? `${postData.upvote_ratio * 100}%` : '0%'
-                  }}
-                />
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-slate-500 dark:text-slate-400">Upvote Ratio</span>
-                <span className="font-medium">
-                  {postData.upvote_ratio ? (postData.upvote_ratio * 100).toFixed(1) + '%' : 'N/A'}
-                </span>
-              </div>
-              <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-blue-500 rounded-full" 
-                  style={{ 
-                    width: postData.upvote_ratio ? `${postData.upvote_ratio * 100}%` : '0%'
-                  }}
-                />
-              </div>
-            </div>
-            <div>
-              {/* <div className="flex justify-between text-sm mb-1">
-                <span className="text-slate-500 dark:text-slate-400">Controversiality</span>
-                <span className="font-medium">
-                  {postData.controversiality || 0}
-                </span>
-              </div> */}
-              {/* <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-purple-500 rounded-full" 
-                  style={{ 
-                    width: postData.controversiality ? `${postData.controversiality * 10}%` : '0%'
-                  }}
-                />
-              </div> */}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Post Content Card */}
-      <div className="rounded-2xl bg-white dark:bg-slate-800/50 p-6 border border-slate-200 dark:border-slate-700">
-        <h3 className="text-lg font-semibold mb-4">Post Content</h3>
-        <div className="space-y-4">
-          <div>
-            <h4 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">Title</h4>
-            <p className="text-lg font-semibold">{postData.title}</p>
-          </div>
-          {postData.selftext && (
-            <div>
-              <h4 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">Content</h4>
-              <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
-                {postData.selftext.length > 500 
-                  ? `${postData.selftext.substring(0, 500)}...` 
-                  : postData.selftext
-                }
-              </p>
-              {postData.selftext.length > 500 && (
-                <button className="text-sm text-blue-600 dark:text-blue-400 hover:underline mt-2">
-                  Read more
-                </button>
-              )}
-            </div>
-          )}
-          {postData.url && !postData.url.includes('reddit.com') && (
-            <div>
-              <h4 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">External Link</h4>
-              <a 
-                href={postData.url} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-sm text-blue-600 dark:text-blue-400 hover:underline truncate block"
-              >
-                {postData.url}
-              </a>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-/* ---------------------- MAIN COMPONENT ---------------------- */
 export default function RedditAnalyticsHome() {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
@@ -656,7 +376,18 @@ export default function RedditAnalyticsHome() {
                     Clear
                   </button>
                 </div>
-                <AnalyticsDashboard analysis={analysis} />
+                <>
+                  <QuickInsights analysis={analysis} />
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <EngagementChart analysis={analysis} />
+                    <SentimentPieChart analysis={analysis} />
+                  </div>
+
+                  <PerformanceRadar analysis={analysis} />
+            
+                </>
+
               </div>
             )}
           </div>

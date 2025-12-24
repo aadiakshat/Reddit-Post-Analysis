@@ -20,7 +20,7 @@
     "express": "^5.2.1",
     "mongoose": "^9.0.1",
     "node-cache": "^5.1.2",
-    "sentiment": "^5.0.2",
+    "recharts": "^2.12.7",
     "twit": "^2.2.11",
     "vader-sentiment": "^1.1.3"
   },
