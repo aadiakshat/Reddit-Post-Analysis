@@ -15,13 +15,13 @@ The project focuses on **API integration, real-time analysis, and frontend–bac
 ---
 ## 📸 Screenshots
 <details>
-<summary>📸 View Application Screenshots</summary>
+<summary>Click to view application screenshots</summary>
 
 ### Home – Reddit URL Input
-![Home Page](Screenshots/Screenshot from 2025-12-24 22-40-30.png)
+![Home Page](Screenshots/Screenshot%20from%202025-12-24%2022-40-30.png)
 
-### AI Analysus
-![Dark Mode](Screenshots/Screenshot from 2025-12-24 22-41-15.png)
+### Gemini Analysis
+![Gemini Analysis](Screenshots/Screenshot%20from%202025-12-24%2022-41-15.png)
 
 </details>
 ## 🧠 What This Project Does
