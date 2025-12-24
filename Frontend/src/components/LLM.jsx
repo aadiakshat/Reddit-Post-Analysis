@@ -15,7 +15,7 @@ export default function ReviewPanel({ postId }) {
         setError(null);
 
         const res = await fetch(
-          `https://reddit-post-analysis.onrender.com/api/reddit/post/${postId}/gemini`
+          `http://localhost:5000/api/reddit/post/${postId}/gemini`
         );
         const json = await res.json();
 
