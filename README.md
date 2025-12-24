@@ -111,7 +111,7 @@ This makes RedditTrack ideal for **quick sentiment inspection, content analysis,
 - **Node.js**  
 - **Express.js**  
 - **Axios** – Reddit API requests  
-- **Sentiment (NPM)** – text sentiment scoring  
+- **Vader-Sentiment** – text sentiment scoring  
 - **dotenv** – environment configuration  
 
 ---
